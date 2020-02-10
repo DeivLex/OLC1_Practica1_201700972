@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -19,12 +20,19 @@ import javax.swing.JOptionPane;
  * @author Davis
  */
 public class home extends javax.swing.JFrame {
-
+    private int estado = 0;
+    private int posicion = 0;
+    private String fuente = "";
+    private char caracter;
+    private String lexema = "";
+    private ArrayList<String> listaLexema = new ArrayList();
+    private ArrayList<String> listaToken = new ArrayList();
     /**
      * Creates new form home
      */
     public home() {
         initComponents();
+        Consola.setEditable(false);
     }
 
     /**
@@ -37,9 +45,11 @@ public class home extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        Entrada = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        Consola = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -50,14 +60,23 @@ public class home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        Entrada.setColumns(20);
+        Entrada.setRows(5);
+        jScrollPane1.setViewportView(Entrada);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel1.setText("Archivo de entrada");
 
         jButton1.setText("Analizar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        Consola.setColumns(20);
+        Consola.setRows(5);
+        jScrollPane2.setViewportView(Consola);
 
         jMenu1.setText("Archivo");
 
@@ -101,11 +120,12 @@ public class home extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1))
-                .addContainerGap(134, Short.MAX_VALUE))
+                    .addComponent(jButton1)
+                    .addComponent(jScrollPane2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,17 +133,19 @@ public class home extends javax.swing.JFrame {
                 .addGap(64, 64, 64)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-jTextArea1.setText(abrirArchivo());
+Entrada.setText(abrirArchivo());
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -136,6 +158,25 @@ guardarArchivo();
 guardarComo();
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+estado = 0;
+        posicion = 0;
+        lexema = "";
+        listaLexema.clear();
+        listaToken.clear();
+        fuente = Entrada.getText();
+        fuente = fuente.trim();
+        if(fuente.length() == 0){
+        	Consola.setText("El cuadro de entrada no contiene\ncaracteres a"
+                + " evaluar. ");
+    	}
+        else{
+            iniciarProceso();
+            imprimirLista();
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -173,6 +214,8 @@ guardarComo();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea Consola;
+    private javax.swing.JTextArea Entrada;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
@@ -183,10 +226,11 @@ guardarComo();
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
-
+File direccion;
 private String abrirArchivo() {
+    direccion=null;
   String aux="";   
   String texto="";
   try
@@ -196,7 +240,7 @@ private String abrirArchivo() {
    file.showOpenDialog(this);
    /**abrimos el archivo seleccionado*/
    File abre=file.getSelectedFile();
- 
+ direccion=abre;
    /**recorremos el archivo, lo leemos para plasmarlo
    *en el area de texto*/
    if(abre!=null)
@@ -231,7 +275,7 @@ private void guardarComo() {
    /*guardamos el archivo y le damos el formato directamente,
     * si queremos que se guarde en formato doc lo definimos como .doc*/
     FileWriter  save=new FileWriter(guarda+".er");
-    save.write(jTextArea1.getText());
+    save.write(Entrada.getText());
     save.close();
     JOptionPane.showMessageDialog(null,
          "El archivo se a guardado Exitosamente",
@@ -246,7 +290,209 @@ private void guardarComo() {
   }
  }
 private void guardarArchivo() {
-
+            FileWriter fw;
+            try
+            {
+                  fw= new FileWriter(direccion);
+            }
+            catch(IOException io)
+            {
+    JOptionPane.showMessageDialog(null,
+         "Error al abrir archivo",
+             "Información",JOptionPane.INFORMATION_MESSAGE);
+                  return;
+            }
+            //Escribimos
+            try
+            {
+                  fw.write(Entrada.getText());
+    JOptionPane.showMessageDialog(null,
+         "Archivo guardado",
+             "Información",JOptionPane.INFORMATION_MESSAGE);
+            }
+            catch(IOException io)
+            {
+    JOptionPane.showMessageDialog(null,
+         "Error al escribir archivo",
+             "Información",JOptionPane.INFORMATION_MESSAGE);
+            }
+            //cerramos el fichero
+            try
+            {
+                  fw.close();
+            }
+            catch(IOException io)
+            {
+    JOptionPane.showMessageDialog(null,
+         "Error al cerrar archivo",
+             "Información",JOptionPane.INFORMATION_MESSAGE);
+            } 
 }
+private void iniciarProceso(){
+caracter = fuente.charAt(posicion);
+switch(estado){
+    case 0:{
+        if(caracter ==';'){
+            lexema += Character.toString(caracter);
+            addList(lexema,"punto y coma");
+            lexema = "";
+        }
+        else if(caracter == '+'){
+            lexema += Character.toString(caracter);
+            addList(lexema,"mas");
+            lexema = "";
+        }
+        else if(caracter == '='){
+            lexema += Character.toString(caracter);
+            addList(lexema,"igual");
+            lexema = "";
+        }
+        else if(Character.isDigit(caracter)){
+            estado = 5;
+            lexema += Character.toString(caracter);
+        }
+        else if(Character.isLetter(caracter)){
+            estado = 1;
+            lexema += Character.toString(caracter);
+        }
+        else if(esEspacio(caracter)){}
+        else{error();}
+        break;
+    }
+    case 1:{
+        if(caracter == ';'){
+            addList(lexema,"identificador");
+            addList(";","punto y coma");
+            estado = 0;
+            lexema = "";
+        }
+        else if(caracter == '='){
+            addList(lexema,"identificador");
+            addList("=","igual");
+            estado = 0;
+            lexema = "";
+        }
+        else if(caracter == '+'){
+            addList(lexema,"identificador");
+            addList("+","mas");
+            estado = 0;
+            lexema = "";
+        }
+        else if(esEspacio(caracter)){
+            addList(lexema,"identificador");
+            estado = 0;
+            lexema = "";
+        }
+        else if(Character.isDigit(caracter)||Character.isLetter(caracter))
+        {
+            lexema += Character.toString(caracter);
+        }
+        else{error();}
+        imprimir();
+        break;
+    }
+    case 5:{
+        if(caracter == ';'){
+            addList(lexema,"numero");
+            addList(";","punto y coma");
+            lexema = "";
+            estado = 0;
+        }
+        else if(caracter == '='){
+            addList(lexema,"numero");
+            addList("=","igual");
+            lexema = "";
+            estado = 0;
+        }
+        else if(caracter == '+'){
+            addList(lexema,"numero");
+            addList("+","mas");
+            lexema = "";
+            estado = 0;
+        }
+        else if(esEspacio(caracter)){
+            addList(lexema,"numero");
+            lexema = "";
+            estado = 0;
+        }
+        else if(Character.isDigit(caracter))
+        { 
+            lexema += Character.toString(caracter);
+        }
+        else {
+            error();
+        }
+        break;
+    }
+    default:
+        break;
+}
+posicion++;
+imprimir();
+if (posicion >= fuente.length()){
+    if(estado == 1){
+        addList(lexema,"identificador");
+    }
+    else if(estado == 5){
+        addList(lexema,"numero");
+    }
+}
+else{
+    iniciarProceso();
+}
+}
+private void error(){
+    lexema += Character.toString(caracter);
+    posicion++;
+    if(posicion >= fuente.length()){
+        estado = 0;
+        addList(lexema,"error");
+    }else{
+        caracter = fuente.charAt(posicion);
+        if(caracter == '='){
+            addList(lexema,"error");
+            addList("=","igual");
+            estado = 0;
+            lexema = "";
+        }
+        else if(caracter == '+'){
+            addList(lexema,"error");
+            addList("+","suma");
+            estado = 0;
+            lexema = "";
+        }
+        else if(caracter == ';'){
+            addList(lexema,"error");
+            addList(";","punto y coma");
+            estado = 0;
+            lexema = "";
+        }
+        else if(esEspacio(caracter)){
+            addList(lexema,"error");
+            estado = 0;
+            lexema = "";
+        }
+        else{error();}
+    }
+} 
+private boolean esEspacio(char c){
+    return c == '\n' || c== '\t' || c == ' ';
+}
+private void imprimirLista(){
+    String auxiliar = "Token    -------   Lexema\n";
+    for(int i = 0; i < listaLexema.size(); i++){
+        auxiliar += listaToken.get(i) + "  -------  " + listaLexema.get(i) + "\n";
+    }
+    Consola.setText(auxiliar);
+}
+private void imprimir(){
+    System.out.println("estado:" + estado + " caracter:" + caracter + " lexema:" 
+            + lexema + " posicion:" + posicion );
+}
+private void addList(String lex, String token){
+    listaLexema.add(lex);
+    listaToken.add(token);
+}
+
 }
 
