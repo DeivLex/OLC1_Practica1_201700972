@@ -23,10 +23,11 @@ public class home extends javax.swing.JFrame {
     private int estado = 0;
     private int posicion = 0;
     private String fuente = "";
-    private char caracter;
-    private String lexema = "";
+    private char c;
+    private String auxLex = "";
     private ArrayList<String> listaLexema = new ArrayList();
     private ArrayList<String> listaToken = new ArrayList();
+    private ArrayList<String> error = new ArrayList();
     /**
      * Creates new form home
      */
@@ -162,11 +163,11 @@ guardarComo();
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 estado = 0;
         posicion = 0;
-        lexema = "";
+        auxLex = "";
         listaLexema.clear();
         listaToken.clear();
         fuente = Entrada.getText();
-        fuente = fuente.trim();
+        fuente = fuente.trim()+"#";
         if(fuente.length() == 0){
         	Consola.setText("El cuadro de entrada no contiene\ncaracteres a"
                 + " evaluar. ");
@@ -329,152 +330,87 @@ private void guardarArchivo() {
             } 
 }
 private void iniciarProceso(){
-caracter = fuente.charAt(posicion);
-switch(estado){
-    case 0:{
-        if(caracter ==';'){
-            lexema += Character.toString(caracter);
-            addList(lexema,"punto y coma");
-            lexema = "";
+for (int i = 0; i < fuente.length(); i++) {
+    c=fuente.charAt(i);
+    System.out.println(i+" "+c);
+    switch(estado){
+        case 0:{
+            System.out.println(auxLex);
+            if(Character.isLetter(c)){
+                auxLex += c;
+                estado = 1;
+            }
+            else if(c==':'){
+            auxLex+=c;
+            addList(auxLex,"dos puntos");
+            estado=2;
+            }else if(c==';'){
+            auxLex+=c;
+            addList(auxLex,"punto y coma");
+            estado=0;
+            }else if(c=='-'){
+            auxLex+=c;
+            estado=4;
+            }else if(esEspacio(c)){
+            estado=0;
+            }else{
+            if(c=='#'&& i==(fuente.length()-1)){
+                System.out.println("Ya se acado");
+            }
+            }
+            break; 
         }
-        else if(caracter == '+'){
-            lexema += Character.toString(caracter);
-            addList(lexema,"mas");
-            lexema = "";
+        case 1:{
+            if(Character.isLetter(c)){
+                auxLex += c;
+                estado = 1;
+            }else if(auxLex.equals("CONJ")){
+            addList(auxLex,"palabra");
+            estado=0;
+            i=i-1;
+            }else{
+            addList(auxLex,"error");
+            estado=0;
+            }
+            break;
         }
-        else if(caracter == '='){
-            lexema += Character.toString(caracter);
-            addList(lexema,"igual");
-            lexema = "";
+        case 2:{
+            if(Character.isLetter(c)){
+                auxLex += c;
+                estado = 3;
+            }
+            break;
         }
-        else if(Character.isDigit(caracter)){
-            estado = 5;
-            lexema += Character.toString(caracter);
+        case 3:{
+            if(Character.isLetter(c)){
+                auxLex += c;
+                estado = 3;
+            }else if(Character.isDigit(c)){
+                auxLex += c;
+                estado = 3;
+            }else{
+            addList(auxLex,"id conjunto");
+            estado=0;
+            i=i-1;
+            }
+            break;
         }
-        else if(Character.isLetter(caracter)){
-            estado = 1;
-            lexema += Character.toString(caracter);
+        case 4:{
+            if(c=='>'){
+            auxLex+=c;
+            addList(auxLex,"asignacion");
+            estado=0;
+            }else{
+            addList(auxLex,"error");
+            estado=0;
+            }
+            break;
         }
-        else if(esEspacio(caracter)){}
-        else{error();}
-        break;
+        case 5:{
+            break;
+        }
     }
-    case 1:{
-        if(caracter == ';'){
-            addList(lexema,"identificador");
-            addList(";","punto y coma");
-            estado = 0;
-            lexema = "";
-        }
-        else if(caracter == '='){
-            addList(lexema,"identificador");
-            addList("=","igual");
-            estado = 0;
-            lexema = "";
-        }
-        else if(caracter == '+'){
-            addList(lexema,"identificador");
-            addList("+","mas");
-            estado = 0;
-            lexema = "";
-        }
-        else if(esEspacio(caracter)){
-            addList(lexema,"identificador");
-            estado = 0;
-            lexema = "";
-        }
-        else if(Character.isDigit(caracter)||Character.isLetter(caracter))
-        {
-            lexema += Character.toString(caracter);
-        }
-        else{error();}
-        imprimir();
-        break;
-    }
-    case 5:{
-        if(caracter == ';'){
-            addList(lexema,"numero");
-            addList(";","punto y coma");
-            lexema = "";
-            estado = 0;
-        }
-        else if(caracter == '='){
-            addList(lexema,"numero");
-            addList("=","igual");
-            lexema = "";
-            estado = 0;
-        }
-        else if(caracter == '+'){
-            addList(lexema,"numero");
-            addList("+","mas");
-            lexema = "";
-            estado = 0;
-        }
-        else if(esEspacio(caracter)){
-            addList(lexema,"numero");
-            lexema = "";
-            estado = 0;
-        }
-        else if(Character.isDigit(caracter))
-        { 
-            lexema += Character.toString(caracter);
-        }
-        else {
-            error();
-        }
-        break;
-    }
-    default:
-        break;
-}
-posicion++;
-imprimir();
-if (posicion >= fuente.length()){
-    if(estado == 1){
-        addList(lexema,"identificador");
-    }
-    else if(estado == 5){
-        addList(lexema,"numero");
-    }
-}
-else{
-    iniciarProceso();
-}
-}
-private void error(){
-    lexema += Character.toString(caracter);
-    posicion++;
-    if(posicion >= fuente.length()){
-        estado = 0;
-        addList(lexema,"error");
-    }else{
-        caracter = fuente.charAt(posicion);
-        if(caracter == '='){
-            addList(lexema,"error");
-            addList("=","igual");
-            estado = 0;
-            lexema = "";
-        }
-        else if(caracter == '+'){
-            addList(lexema,"error");
-            addList("+","suma");
-            estado = 0;
-            lexema = "";
-        }
-        else if(caracter == ';'){
-            addList(lexema,"error");
-            addList(";","punto y coma");
-            estado = 0;
-            lexema = "";
-        }
-        else if(esEspacio(caracter)){
-            addList(lexema,"error");
-            estado = 0;
-            lexema = "";
-        }
-        else{error();}
-    }
-} 
+}}
 private boolean esEspacio(char c){
     return c == '\n' || c== '\t' || c == ' ';
 }
@@ -485,13 +421,10 @@ private void imprimirLista(){
     }
     Consola.setText(auxiliar);
 }
-private void imprimir(){
-    System.out.println("estado:" + estado + " caracter:" + caracter + " lexema:" 
-            + lexema + " posicion:" + posicion );
-}
 private void addList(String lex, String token){
     listaLexema.add(lex);
     listaToken.add(token);
+    auxLex = "";
 }
 
 }
