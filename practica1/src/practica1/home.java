@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
  * @author Davis
  */
 public class home extends javax.swing.JFrame {
+    static boolean Division = false;
     private int estado = 0;
     private int posicion = 0;
     private String fuente = "";
@@ -161,7 +162,9 @@ guardarComo();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-estado = 0;
+
+        Division=false;
+        estado = 0;
         posicion = 0;
         auxLex = "";
         listaLexema.clear();
@@ -334,34 +337,12 @@ for (int i = 0; i < fuente.length(); i++) {
     c=fuente.charAt(i);
     System.out.println(i+" "+c);
     switch(estado){
-        case 0:{
-            System.out.println(auxLex);
+
+        case 1:{
             if(Character.isLetter(c)){
                 auxLex += c;
                 estado = 1;
-            }
-            else if(c==':'){
-            auxLex+=c;
-            addList(auxLex,"dos puntos");
-            estado=2;
-            }else if(c==';'){
-            auxLex+=c;
-            addList(auxLex,"punto y coma");
-            estado=0;
-            }else if(c=='-'){
-            auxLex+=c;
-            estado=4;
-            }else if(esEspacio(c)){
-            estado=0;
-            }else{
-            if(c=='#'&& i==(fuente.length()-1)){
-                System.out.println("Ya se acado");
-            }
-            }
-            break; 
-        }
-        case 1:{
-            if(Character.isLetter(c)){
+            }else if(Character.isDigit(c)){
                 auxLex += c;
                 estado = 1;
             }else if(auxLex.equals("CONJ")){
@@ -369,7 +350,7 @@ for (int i = 0; i < fuente.length(); i++) {
             estado=0;
             i=i-1;
             }else{
-            addList(auxLex,"error");
+            addList(auxLex,"id");
             estado=0;
             }
             break;
@@ -399,7 +380,7 @@ for (int i = 0; i < fuente.length(); i++) {
             if(c=='>'){
             auxLex+=c;
             addList(auxLex,"asignacion");
-            estado=0;
+            estado=5;
             }else{
             addList(auxLex,"error");
             estado=0;
@@ -407,32 +388,162 @@ for (int i = 0; i < fuente.length(); i++) {
             break;
         }
         case 5:{
+            if(Character.isLetter(c)){
+                auxLex += c;
+                estado = 6;
+            }else if(Character.isDigit(c)){
+                auxLex += c;
+                estado = 6;
+            }else if(c==(char)34){
+                if(Division==false){
+                    auxLex += c;
+                }
+            estado=12;
+            }else if(c=='%'){
+            addList(auxLex,"ER");
+            estado=0;
+            i=i-1;
+            }else if(c=='.'){
+                auxLex += c;
+            estado=5;
+            }else if(c=='|'){
+                auxLex += c;
+            estado=5;
+            }else if(c=='?'){
+                auxLex += c;
+            estado=5;
+            }else if(c=='*'){
+                auxLex += c;
+            estado=5;
+            }else if(c=='+'){
+                auxLex += c;
+            estado=5;
+            }else if(c=='{'){
+            auxLex += c;
+            estado=14;
+            }else if(c==';'){
+            addList(auxLex,"ER");
+            addList(",","punto y coma");
+            estado=5;
+            }else if(esEspacio(c)){
+            estado=5;
+            }else{
+            auxLex += c;
+            estado = 6;
+            }
             break;
         }
         case 6:{
+             if(c==','){
+            addList(auxLex,"simbolo conjunto");
+            addList(",","coma");
+            estado=5;
+            }else if(c=='~'){
+                addList(auxLex,"macro conjunto");
+                addList("~","virgulilla");
+                estado = 7;
+            }else if(esEspacio(c)){
+            estado=6;
+            }else
+            {
+            addList(auxLex,"simbolo conjunto");
+            i=i-1;
+            estado=0;
+            }
             break;
         }
         case 7:{
+            if(esEspacio(c)){
+            estado=7;
+            }else{
+            auxLex += c;
+            addList(auxLex,"macro conjunto");
+            estado=0;}
             break;
         }
         case 8:{
+            if(c=='/'){
+            auxLex+=c;
+            estado=8;
+            }else if(c == '\n' || c== '\t'){
+                addList(auxLex,"comentario");
+                estado = 0;
+            }else if(c!='Ñ'){
+            auxLex+=c;
+            estado=8;
+            }
             break;
         }
         case 9:{
+            if(c=='!'){
+            auxLex+=c;
+            estado=10;
+            }else{
+            addList(auxLex,"error");
+            estado=0;
+            }
             break;
         }
         case 10:{
+            if(c == '!'){
+                auxLex+=c;              
+                estado = 11;
+            }else if(c!='Ñ'){
+            auxLex+=c;
+            estado=10;
+            }
             break;
         }
         case 11:{
+            if(c=='>'){
+            auxLex+=c;
+            addList(auxLex,"comentario miltilinea");
+            estado = 0;
+            }else{
+            addList(auxLex,"error");
+            estado=0;
+            }
             break;
         }
         case 12:{
+            if(c==(char)34){
+                if(Division==true){
+                addList(auxLex,"Lexema a evaluar");
+                estado = 0;
+                }else{
+                auxLex += c;
+            estado=5;
+                }
+            }else{
+            auxLex+=c;
+            estado=12;
+            }
             break;
         }
         case 13:{
+            if(c=='%'){
+            auxLex+=c;
+            estado=13;
+            }else if(c=='\n'||c=='\t'){
+            estado=13;
+            }else if(auxLex.equalsIgnoreCase("%%%%")){
+            addList(auxLex,"Division entre partes");
+            Division=true;
+            estado = 0;
+            i=i-1;
+            }else{
+            addList(auxLex,"error");
+            estado=0;
+            }
             break;
         }case 14:{
+            if(c=='}'){
+            auxLex+=c;
+            estado=5;
+            }else{
+            auxLex+=c;
+            estado=14;
+            }
             break;
         }
         case 15:{
@@ -446,6 +557,45 @@ for (int i = 0; i < fuente.length(); i++) {
         }
         case 18:{
             break;
+        }
+        case 0:{
+            System.out.println(auxLex);
+            if(Character.isLetter(c)){
+                auxLex += c;
+                estado = 1;
+            }
+            else if(c==':'){
+            auxLex+=c;
+            addList(auxLex,"dos puntos");
+            estado=2;
+            }else if(c==';'){
+            auxLex+=c;
+            addList(auxLex,"punto y coma");
+            estado=0;
+            }else if(c=='-'){
+            auxLex+=c;
+            estado=4;
+            }else if(c=='{'){
+            auxLex+=c;
+            addList(auxLex,"llave izq");
+            estado=0;
+            }else if(c=='/'){
+            auxLex+=c;
+            estado=8;
+            }else if(c=='<'){
+            auxLex+=c;
+            estado=9;
+            }else if(c=='%'){
+            auxLex+=c;
+            estado=13;
+            }else if(esEspacio(c)){
+            estado=0;
+            }else{
+            if(c=='#'&& i==(fuente.length()-1)){
+                System.out.println("Ya se acado");
+            }
+            }
+            break; 
         }
         
     }
