@@ -21,6 +21,10 @@ import javax.swing.JOptionPane;
  */
 public class home extends javax.swing.JFrame {
     static boolean Division = false;
+    static boolean Sim = false;
+    static String ConActual="";
+    static int Imacro=0;
+    static int Fmacro=0;
     private int estado = 0;
     private int posicion = 0;
     private String fuente = "";
@@ -28,7 +32,9 @@ public class home extends javax.swing.JFrame {
     private String auxLex = "";
     private ArrayList<String> listaLexema = new ArrayList();
     private ArrayList<String> listaToken = new ArrayList();
-    private ArrayList<String> error = new ArrayList();
+    private ArrayList<String> Conjunto = new ArrayList();
+    private ArrayList<String> DatCon = new ArrayList();
+    
     /**
      * Creates new form home
      */
@@ -162,15 +168,22 @@ guardarComo();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
+        //Clean
+        Sim=false;
         Division=false;
+        Imacro=0;
+        Fmacro=0;
         estado = 0;
         posicion = 0;
         auxLex = "";
+        ConActual="";
         listaLexema.clear();
         listaToken.clear();
+        Conjunto.clear();
+        DatCon.clear();
         fuente = Entrada.getText();
-        fuente = fuente.trim()+"#";
+        fuente = fuente.trim();
+        //inicio
         if(fuente.length() == 0){
         	Consola.setText("El cuadro de entrada no contiene\ncaracteres a"
                 + " evaluar. ");
@@ -178,6 +191,11 @@ guardarComo();
         else{
             iniciarProceso();
             imprimirLista();
+            for (int i = 0; i < Conjunto.size(); i++) {
+                System.out.println(Conjunto.get(i)+"-----"+DatCon.get(i));
+            }
+            System.out.println(Imacro+"~"+Fmacro);
+            System.out.println("Es simbolo: "+Sim);
         }
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -335,7 +353,7 @@ private void guardarArchivo() {
 private void iniciarProceso(){
 for (int i = 0; i < fuente.length(); i++) {
     c=fuente.charAt(i);
-    System.out.println(i+" "+c);
+    //System.out.println(i+" "+c);
     switch(estado){
 
         case 1:{
@@ -346,12 +364,13 @@ for (int i = 0; i < fuente.length(); i++) {
                 auxLex += c;
                 estado = 1;
             }else if(auxLex.equals("CONJ")){
-            addList(auxLex,"palabra");
+            addList(auxLex,"Palabra Reservada");
             estado=0;
             i=i-1;
             }else{
-            addList(auxLex,"id");
+            addList(auxLex,"Id");
             estado=0;
+            i=i-1;
             }
             break;
         }
@@ -370,7 +389,8 @@ for (int i = 0; i < fuente.length(); i++) {
                 auxLex += c;
                 estado = 3;
             }else{
-            addList(auxLex,"id conjunto");
+            ConActual=auxLex;
+            addList(auxLex,"Id conjunto");
             estado=0;
             i=i-1;
             }
@@ -379,9 +399,10 @@ for (int i = 0; i < fuente.length(); i++) {
         case 4:{
             if(c=='>'){
             auxLex+=c;
-            addList(auxLex,"asignacion");
+            addList(auxLex,"Asignacion");
             estado=5;
             }else{
+                auxLex+=c;
             addList(auxLex,"error");
             estado=0;
             }
@@ -423,8 +444,8 @@ for (int i = 0; i < fuente.length(); i++) {
             estado=14;
             }else if(c==';'){
             addList(auxLex,"ER");
-            addList(",","punto y coma");
-            estado=5;
+            addList(";","punto y coma");
+            estado=0;
             }else if(esEspacio(c)){
             estado=5;
             }else{
@@ -435,17 +456,26 @@ for (int i = 0; i < fuente.length(); i++) {
         }
         case 6:{
              if(c==','){
+            Conjunto.add(ConActual);
+            DatCon.add(auxLex);
             addList(auxLex,"simbolo conjunto");
             addList(",","coma");
             estado=5;
             }else if(c=='~'){
+                 if (Character.isDigit(auxLex.charAt(0))||Character.isLetter(auxLex.charAt(0))) {
+                     Sim=false;
+                 }else{
+                     Sim=true;
+                 }
+                Imacro=(int)auxLex.charAt(0);
                 addList(auxLex,"macro conjunto");
                 addList("~","virgulilla");
                 estado = 7;
             }else if(esEspacio(c)){
             estado=6;
-            }else
-            {
+            }else{
+            Conjunto.add(ConActual);
+            DatCon.add(auxLex);
             addList(auxLex,"simbolo conjunto");
             i=i-1;
             estado=0;
@@ -457,6 +487,21 @@ for (int i = 0; i < fuente.length(); i++) {
             estado=7;
             }else{
             auxLex += c;
+            Fmacro=(int)auxLex.charAt(0);
+                for (int j = Imacro; j <= Fmacro; j++) {
+                    if (Sim==true) {
+                    char v=(char)j;
+                        if (Character.isDigit(v)||Character.isLetter(v)) {
+                        } else {
+                            Conjunto.add(ConActual);
+                            DatCon.add(Character.toString(v));   
+                        }
+                    }else{
+                    char v=(char)j;
+                    Conjunto.add(ConActual);
+                    DatCon.add(Character.toString(v));
+                    }
+                }
             addList(auxLex,"macro conjunto");
             estado=0;}
             break;
@@ -479,6 +524,7 @@ for (int i = 0; i < fuente.length(); i++) {
             auxLex+=c;
             estado=10;
             }else{
+                auxLex+=c;
             addList(auxLex,"error");
             estado=0;
             }
@@ -500,6 +546,7 @@ for (int i = 0; i < fuente.length(); i++) {
             addList(auxLex,"comentario miltilinea");
             estado = 0;
             }else{
+                auxLex+=c;
             addList(auxLex,"error");
             estado=0;
             }
@@ -532,6 +579,7 @@ for (int i = 0; i < fuente.length(); i++) {
             estado = 0;
             i=i-1;
             }else{
+            auxLex+=c;
             addList(auxLex,"error");
             estado=0;
             }
@@ -567,7 +615,10 @@ for (int i = 0; i < fuente.length(); i++) {
             else if(c==':'){
             auxLex+=c;
             addList(auxLex,"dos puntos");
-            estado=2;
+            if(Division==true){
+            estado=5;
+            }else{estado=2;}
+
             }else if(c==';'){
             auxLex+=c;
             addList(auxLex,"punto y coma");
@@ -590,10 +641,14 @@ for (int i = 0; i < fuente.length(); i++) {
             estado=13;
             }else if(esEspacio(c)){
             estado=0;
+            }else if(c=='}'){
+            auxLex+=c;
+            addList(auxLex,"llave der");
+            estado=0;
             }else{
-            if(c=='#'&& i==(fuente.length()-1)){
-                System.out.println("Ya se acado");
-            }
+            auxLex+=c;
+            addList(auxLex,"error");
+            estado=0;
             }
             break; 
         }
