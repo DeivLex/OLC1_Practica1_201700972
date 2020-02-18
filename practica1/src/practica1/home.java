@@ -23,6 +23,7 @@ public class home extends javax.swing.JFrame {
     static boolean Division = false;
     static boolean Sim = false;
     static String ConActual="";
+    static String ErActual="";
     static int Imacro=0;
     static int Fmacro=0;
     private int estado = 0;
@@ -30,10 +31,13 @@ public class home extends javax.swing.JFrame {
     private String fuente = "";
     private char c;
     private String auxLex = "";
-    private ArrayList<String> listaLexema = new ArrayList();
-    private ArrayList<String> listaToken = new ArrayList();
-    private ArrayList<String> Conjunto = new ArrayList();
-    private ArrayList<String> DatCon = new ArrayList();
+    private String auxEr = "";
+    ArrayList<String> listaLexema = new ArrayList();
+    ArrayList<String> listaToken = new ArrayList();
+    ArrayList<String> Conjunto = new ArrayList();
+    ArrayList<String> DatCon = new ArrayList();
+    static ArrayList<String> ER = new ArrayList();
+    static ArrayList<String> NameER = new ArrayList();
     
     /**
      * Creates new form home
@@ -58,6 +62,8 @@ public class home extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         Consola = new javax.swing.JTextArea();
+        jButton2 = new javax.swing.JButton();
+        selector = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -85,6 +91,13 @@ public class home extends javax.swing.JFrame {
         Consola.setColumns(20);
         Consola.setRows(5);
         jScrollPane2.setViewportView(Consola);
+
+        jButton2.setText("Generar Arbol");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("Archivo");
 
@@ -131,7 +144,12 @@ public class home extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2))
                     .addComponent(jScrollPane2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -143,7 +161,10 @@ public class home extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2)
+                    .addComponent(selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
                 .addContainerGap())
@@ -169,6 +190,7 @@ guardarComo();
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //Clean
+        selector.removeAllItems();
         Sim=false;
         Division=false;
         Imacro=0;
@@ -176,29 +198,44 @@ guardarComo();
         estado = 0;
         posicion = 0;
         auxLex = "";
+        auxEr="";
         ConActual="";
+        ErActual="";
         listaLexema.clear();
         listaToken.clear();
         Conjunto.clear();
         DatCon.clear();
+        ER.clear();
+        NameER.clear();
         fuente = Entrada.getText();
         fuente = fuente.trim();
         //inicio
         if(fuente.length() == 0){
         	Consola.setText("El cuadro de entrada no contiene\ncaracteres a"
                 + " evaluar. ");
+              
     	}
         else{
             iniciarProceso();
             imprimirLista();
-            for (int i = 0; i < Conjunto.size(); i++) {
-                System.out.println(Conjunto.get(i)+"-----"+DatCon.get(i));
+            for (int i = 0; i < NameER.size(); i++) {
+                if (i==0) {
+                    selector.addItem(NameER.get(0));
+                }else if (!NameER.get(i).equals(NameER.get(i-1))) {
+                    selector.addItem(NameER.get(i));   
+                }
+
             }
-            System.out.println(Imacro+"~"+Fmacro);
-            System.out.println("Es simbolo: "+Sim);
+            for (int i = 0; i < ER.size(); i++) {
+                System.out.println(i+". "+NameER.get(i)+" = "+ER.get(i));
+            }
         }
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        ABBGraficar.main(selector.getSelectedItem().toString());
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,6 +276,7 @@ guardarComo();
     private javax.swing.JTextArea Consola;
     private javax.swing.JTextArea Entrada;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -249,6 +287,7 @@ guardarComo();
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JComboBox<String> selector;
     // End of variables declaration//GEN-END:variables
 File direccion;
 private String abrirArchivo() {
@@ -368,6 +407,11 @@ for (int i = 0; i < fuente.length(); i++) {
             estado=0;
             i=i-1;
             }else{
+                if (Division==false) {
+                    ErActual=auxLex;
+                }else{
+                    ErActual="";
+                }
             addList(auxLex,"Id");
             estado=0;
             i=i-1;
@@ -419,25 +463,39 @@ for (int i = 0; i < fuente.length(); i++) {
                 if(Division==false){
                     auxLex += c;
                 }
+            auxEr=Character.toString((char)39);
             estado=12;
             }else if(c=='%'){
+                NameER.add(ErActual);
+                ER.add(auxEr);
+                auxEr="";
             addList(auxLex,"ER");
             estado=0;
             i=i-1;
             }else if(c=='.'){
                 auxLex += c;
+                NameER.add(ErActual);
+                ER.add("and");
             estado=5;
             }else if(c=='|'){
                 auxLex += c;
+                NameER.add(ErActual);
+                ER.add("or");
             estado=5;
             }else if(c=='?'){
                 auxLex += c;
+                NameER.add(ErActual);
+                ER.add("?");
             estado=5;
             }else if(c=='*'){
                 auxLex += c;
+                NameER.add(ErActual);
+                ER.add("*");
             estado=5;
             }else if(c=='+'){
                 auxLex += c;
+                NameER.add(ErActual);
+                ER.add("+");
             estado=5;
             }else if(c=='{'){
             auxLex += c;
@@ -449,6 +507,7 @@ for (int i = 0; i < fuente.length(); i++) {
             }else if(esEspacio(c)){
             estado=5;
             }else{
+            auxEr+=c;
             auxLex += c;
             estado = 6;
             }
@@ -558,10 +617,15 @@ for (int i = 0; i < fuente.length(); i++) {
                 addList(auxLex,"Lexema a evaluar");
                 estado = 0;
                 }else{
+                auxEr+=Character.toString((char)39);
+                NameER.add(ErActual);
+                ER.add(auxEr);
+                auxEr="";
                 auxLex += c;
             estado=5;
                 }
             }else{
+                auxEr+=c;
             auxLex+=c;
             estado=12;
             }
@@ -586,9 +650,13 @@ for (int i = 0; i < fuente.length(); i++) {
             break;
         }case 14:{
             if(c=='}'){
+            NameER.add(ErActual);
+            ER.add(auxEr);
+            auxEr="";
             auxLex+=c;
             estado=5;
             }else{
+            auxEr+=c;    
             auxLex+=c;
             estado=14;
             }
