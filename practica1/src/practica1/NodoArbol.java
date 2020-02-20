@@ -7,6 +7,7 @@ package practica1;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 /**
  * Clase que representa un nodo del árbol binario de búsqueda.
@@ -14,6 +15,10 @@ import java.io.PrintWriter;
  */
 public class NodoArbol {
     final String valor;
+    private boolean anulable;
+    private ArrayList<String> primeros = new ArrayList();
+    private ArrayList<String> ultimos = new ArrayList();
+    final int identificador;
     public  NodoArbol izquierdo;
     public NodoArbol derecho;
     private static int correlativo=1;
@@ -21,10 +26,55 @@ public class NodoArbol {
 
     public NodoArbol(String valor) {
         this.valor = valor;
+        this.identificador=0;
         this.izquierdo = null;
         this.derecho = null;
         this.id=correlativo++;        
     }
+
+    public NodoArbol(String valor, int identificador) {
+        this.valor = valor;
+        this.identificador=identificador;
+        this.izquierdo = null;
+        this.derecho = null;
+        this.id=correlativo++;     
+    }
+
+    public NodoArbol(String valor, boolean anulable, int identificador) {
+        this.valor = valor;
+        this.anulable = anulable;
+        this.identificador = identificador;
+        this.izquierdo = null;
+        this.derecho = null;
+        this.id=correlativo++; 
+    }
+    
+
+    public boolean isAnulable() {
+        return anulable;
+    }
+
+    public void setAnulable(boolean anulable) {
+        this.anulable = anulable;
+    }
+
+    public ArrayList<String> getPrimeros() {
+        return primeros;
+    }
+
+    public void setPrimeros(ArrayList<String> primeros) {
+        this.primeros = primeros;
+    }
+
+    public ArrayList<String> getUltimos() {
+        return ultimos;
+    }
+
+    public void setUltimos(ArrayList<String> ultimos) {
+        this.ultimos = ultimos;
+    }
+    
+    
 
     public void graficar(String path) {
         FileWriter fichero = null;
@@ -65,10 +115,18 @@ public class NodoArbol {
 
     private String getCodigoInterno() {
         String etiqueta;
+        String p="";
+        String u="";
+        for (int i = 0;i<primeros.size() ; i++) {
+            p+=primeros.get(i)+", ";
+        }
+        for (int i = 0;i<ultimos.size() ; i++) {
+            u+=ultimos.get(i)+", ";
+        }
         if(izquierdo==null && derecho==null){
-            etiqueta="nodo"+id+" [ label =\""+valor+"\"];\n";
+            etiqueta="nodo"+id+" [ label =\""+valor+"\\nAnulable="+anulable+"\\nPrimeros="+p+"\\nUltimos="+u+"\\nid="+identificador+"\"];\n";
         }else{
-            etiqueta="nodo"+id+" [ label =\"<C0>|"+valor+"|<C1>\"];\n";
+            etiqueta="nodo"+id+" [ label =\"<C0>|"+valor+"\\nAnulable="+anulable+"\\nPrimeros="+p+"\\nUltimos="+u+"|<C1>\"];\n";
         }
         if(izquierdo!=null){
             etiqueta=etiqueta + izquierdo.getCodigoInterno() +

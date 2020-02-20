@@ -27,9 +27,16 @@ public class ABBGraficar {
         mover =0;
         temp = Aux.get(0);
         rais.izquierdo= crear();
-        rais.derecho = new NodoArbol("#");
+        rais.derecho = new NodoArbol("#",false,id);             
+        ArrayList<String> p1 = new ArrayList();
+             ArrayList<String> u1 = new ArrayList();
+             p1.add(Integer.toString(id));
+             u1.add(Integer.toString(id));
+             rais.derecho.setPrimeros(p1);
+             rais.derecho.setUltimos(u1);
         prueba.insertar();
-        prueba.inorden();
+        //prueba.inorden();
+        prueba.postorden();
         prueba.graficar(filtro+".jpg");
        
     }
@@ -54,7 +61,13 @@ public class ABBGraficar {
                   inicio.izquierdo = crear();
                   return inicio;
        }else{
-             NodoArbol inicio  = new NodoArbol(temp+"\\nid = "+Integer.toString(id));
+             ArrayList<String> p = new ArrayList();
+             ArrayList<String> u = new ArrayList();
+             p.add(Integer.toString(id));
+             u.add(Integer.toString(id));
+             NodoArbol inicio  = new NodoArbol(temp,false,id);
+             inicio.setPrimeros(p);
+             inicio.setUltimos(u);
              id++;
              return inicio;
        }
