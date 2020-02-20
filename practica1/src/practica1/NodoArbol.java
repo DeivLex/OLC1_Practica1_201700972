@@ -137,5 +137,5 @@ public class NodoArbol {
                "nodo"+id+":C1->nodo"+derecho.id+"\n";                    
         }
         return etiqueta;
-    }        
+    } 
 }

@@ -6,6 +6,8 @@
 package practica1;
 
 import java.util.ArrayList;
+import static practica1.ArbolBinario.Siguientes;
+import static practica1.ArbolBinario.idSig;
 import static practica1.home.ER;
 import static practica1.home.NameER;
 
@@ -29,16 +31,29 @@ public class ABBGraficar {
         rais.izquierdo= crear();
         rais.derecho = new NodoArbol("#",false,id);             
         ArrayList<String> p1 = new ArrayList();
-             ArrayList<String> u1 = new ArrayList();
-             p1.add(Integer.toString(id));
-             u1.add(Integer.toString(id));
-             rais.derecho.setPrimeros(p1);
-             rais.derecho.setUltimos(u1);
+        ArrayList<String> u1 = new ArrayList();
+        p1.add(Integer.toString(id));
+        u1.add(Integer.toString(id));
+        rais.derecho.setPrimeros(p1);
+        rais.derecho.setUltimos(u1);
+        
         prueba.insertar();
-        //prueba.inorden();
         prueba.postorden();
+        Siguientes.clear();
+        idSig.clear();
+        prueba.tablaSig();
+        String sig="";
+        for (int j = 1; j <= id; j++) {
+            for (int i = 0; i < Siguientes.size(); i++) {
+                if(Integer.toString(j).equalsIgnoreCase(idSig.get(i))){
+                sig+=Siguientes.get(i)+", ";
+                }
+            }
+            System.out.println(j+" ----> "+sig);
+            sig="";
+        }
         prueba.graficar(filtro+".jpg");
-       
+        id=1;
     }
    static  NodoArbol crear(){
        if(temp.equals("and")){
@@ -61,20 +76,17 @@ public class ABBGraficar {
                   inicio.izquierdo = crear();
                   return inicio;
        }else{
-             ArrayList<String> p = new ArrayList();
-             ArrayList<String> u = new ArrayList();
-             p.add(Integer.toString(id));
-             u.add(Integer.toString(id));
+             ArrayList<String> pu = new ArrayList();
+             pu.add(Integer.toString(id));
              NodoArbol inicio  = new NodoArbol(temp,false,id);
-             inicio.setPrimeros(p);
-             inicio.setUltimos(u);
+             inicio.setPrimeros(pu);
+             inicio.setUltimos(pu);
              id++;
              return inicio;
        }
     }
     static void  next(){
-        
-       mover ++;
+    mover ++;
     temp=Aux.get(mover);
     }
    
