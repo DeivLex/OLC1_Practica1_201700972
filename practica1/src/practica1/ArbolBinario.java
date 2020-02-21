@@ -5,11 +5,16 @@
  */
 package practica1;
 import java.util.ArrayList;
+import static practica1.ABBGraficar.id;
 import static practica1.ABBGraficar.rais;
 
 public class ArbolBinario {
+    static ArrayList<String> valorSig = new ArrayList();
     static ArrayList<String> Siguientes = new ArrayList();
     static ArrayList<String> idSig = new ArrayList();
+    static ArrayList<String> Estados = new ArrayList();
+    static ArrayList<String> idEs = new ArrayList();
+    
 
     private NodoArbol raiz;
 
@@ -88,7 +93,7 @@ public class ArbolBinario {
                 a.setPrimeros(p);
                 a.setUltimos(a.derecho.getUltimos());
             }
-            if(a.derecho.isAnulable()&&!a.izquierdo.isAnulable()){
+            if(!a.izquierdo.isAnulable()&&a.derecho.isAnulable()){
             a.setPrimeros(a.izquierdo.getPrimeros());
             ArrayList<String> u= new ArrayList();
                 for (int i = 0; i < a.izquierdo.getUltimos().size(); i++) {
@@ -99,7 +104,7 @@ public class ArbolBinario {
                 }
                 a.setUltimos(u);
             }
-            if(!a.izquierdo.isAnulable()&&!a.izquierdo.isAnulable()){
+            if(!a.izquierdo.isAnulable()&&!a.derecho.isAnulable()){
                 a.setPrimeros(a.izquierdo.getPrimeros());
                 a.setUltimos(a.derecho.getUltimos());
             }
@@ -165,5 +170,77 @@ public class ArbolBinario {
             }
         }
     }
+    
+    public void estados(){
+        int ese=0;
+        for (int i = 0; i < raiz.getPrimeros().size(); i++) {
+            idEs.add("S0");
+            Estados.add(raiz.getPrimeros().get(i));
+        }
+        /*int control=1;
+        while(control!=0){
+        
+        }*/
+        String sig="";
+        for (int j = 1; j <= id; j++) {
+            for (int i = 0; i < Siguientes.size(); i++) {
+                if(Integer.toString(j).equalsIgnoreCase(idSig.get(i))){
+                sig+=Siguientes.get(i)+", ";
+                }
+            }
+            System.out.println(valorSig.get(j-1)+" ----> "+j+" ----> "+sig);
+            if(existeEs(sig)==false){
+                ese++;
+                for (int i = 0; i < Siguientes.size(); i++) {
+                if(Integer.toString(j).equalsIgnoreCase(idSig.get(i))){
+                idEs.add("S"+Integer.toString(ese));
+                Estados.add(Siguientes.get(i));
+                }
+            }
+            }
+            System.out.println("Existe: "+existeEs(sig));
+            sig="";
+        }
+        //Imprimir estados
+        String esta="";
+        for (int j = 0; j < ese; j++) {
+            for (int i = 0; i < Estados.size(); i++) {
+                String kk="S"+Integer.toString(j);
+                if(kk.equalsIgnoreCase(idEs.get(i))){
+                esta+=Estados.get(i)+", ";
+                }
+            }
+            System.out.println("S"+Integer.toString(j)+" ----> "+esta);
+            esta="";
+        }
+    }
+    public boolean existeEs(String filtro){
+        String sig="";
+        for (int i = 0; i < idEs.size(); i++) {
+                if (i==0) {
+                    for (int j = 0; j < idEs.size(); j++) {
+                        if (idEs.get(0).equalsIgnoreCase(idEs.get(j))) {
+                            sig+=Estados.get(j)+", ";
+                        }
+                    }
+                    if (filtro.equalsIgnoreCase(sig)) {
+                        return true;
+                    }
+                    sig="";
+                }else if (!idEs.get(i).equals(idEs.get(i-1))) {
+                    for (int j = 0; j < idEs.size(); j++) {
+                        if (idEs.get(i).equalsIgnoreCase(idEs.get(j))) {
+                            sig+=Estados.get(j)+", ";
+                        }
+                    }
+                    if (filtro.equalsIgnoreCase(sig)) {
+                        return true;
+                    }
+                    sig="";
+                }
+        }
+        return false;
+    }
+    
      
 }

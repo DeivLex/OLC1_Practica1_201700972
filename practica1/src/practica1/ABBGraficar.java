@@ -6,8 +6,11 @@
 package practica1;
 
 import java.util.ArrayList;
+import static practica1.ArbolBinario.Estados;
 import static practica1.ArbolBinario.Siguientes;
+import static practica1.ArbolBinario.idEs;
 import static practica1.ArbolBinario.idSig;
+import static practica1.ArbolBinario.valorSig;
 import static practica1.home.ER;
 import static practica1.home.NameER;
 
@@ -29,7 +32,8 @@ public class ABBGraficar {
         mover =0;
         temp = Aux.get(0);
         rais.izquierdo= crear();
-        rais.derecho = new NodoArbol("#",false,id);             
+        rais.derecho = new NodoArbol("#",false,id);
+        valorSig.add("#");
         ArrayList<String> p1 = new ArrayList();
         ArrayList<String> u1 = new ArrayList();
         p1.add(Integer.toString(id));
@@ -41,19 +45,24 @@ public class ABBGraficar {
         prueba.postorden();
         Siguientes.clear();
         idSig.clear();
+        Estados.clear();
+        idEs.clear();
         prueba.tablaSig();
-        String sig="";
+        prueba.estados();
+        
+        /*String sig="";
         for (int j = 1; j <= id; j++) {
             for (int i = 0; i < Siguientes.size(); i++) {
                 if(Integer.toString(j).equalsIgnoreCase(idSig.get(i))){
                 sig+=Siguientes.get(i)+", ";
                 }
             }
-            System.out.println(j+" ----> "+sig);
+            System.out.println(valorSig.get(j-1)+" ----> "+j+" ----> "+sig);
             sig="";
-        }
+        }*/
         prueba.graficar(filtro+".jpg");
         id=1;
+        valorSig.clear();
     }
    static  NodoArbol crear(){
        if(temp.equals("and")){
@@ -76,6 +85,7 @@ public class ABBGraficar {
                   inicio.izquierdo = crear();
                   return inicio;
        }else{
+             valorSig.add(temp);
              ArrayList<String> pu = new ArrayList();
              pu.add(Integer.toString(id));
              NodoArbol inicio  = new NodoArbol(temp,false,id);
