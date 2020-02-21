@@ -49,17 +49,7 @@ public class ABBGraficar {
         idEs.clear();
         prueba.tablaSig();
         prueba.estados();
-        
-        /*String sig="";
-        for (int j = 1; j <= id; j++) {
-            for (int i = 0; i < Siguientes.size(); i++) {
-                if(Integer.toString(j).equalsIgnoreCase(idSig.get(i))){
-                sig+=Siguientes.get(i)+", ";
-                }
-            }
-            System.out.println(valorSig.get(j-1)+" ----> "+j+" ----> "+sig);
-            sig="";
-        }*/
+        prueba.graficarSig();
         prueba.graficar(filtro+".jpg");
         id=1;
         valorSig.clear();

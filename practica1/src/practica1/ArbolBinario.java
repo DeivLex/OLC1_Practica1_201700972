@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package practica1;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import static practica1.ABBGraficar.id;
 import static practica1.ABBGraficar.rais;
@@ -242,5 +244,65 @@ public class ArbolBinario {
         return false;
     }
     
+    public void CodigoSig(String codigoSig) {
+        FileWriter fichero = null;
+        PrintWriter escritor;
+        try
+        {
+            fichero = new FileWriter("siguientes.dot");
+            escritor = new PrintWriter(fichero);
+            escritor.print(codigoSig);
+        } 
+        catch (Exception e){
+            System.err.println("Error al escribir el archivo siguientes.dot");
+        }finally{
+           try {
+                if (null != fichero)
+                    fichero.close();
+           }catch (Exception e2){
+               System.err.println("Error al cerrar el archivo siguientes.dot");
+           } 
+        }                        
+        try{
+          Runtime rt = Runtime.getRuntime();
+          rt.exec( "dot -Tjpg -o siguientes.jpg siguientes.dot");
+
+          Thread.sleep(500);
+        } catch (Exception ex) {
+            System.err.println("Error al generar la imagen para el archivo siguientes.dot");
+        }            
+    }
+    
+    public void graficarSig(){
+        String hojavalor="Hoja Valor";
+        String hojaid="Hoja Id";
+        String hojasig="Siguientes";
+        String sig="";
+        for (int j = 1; j <= id; j++) {
+            for (int i = 0; i < Siguientes.size(); i++) {
+                if(Integer.toString(j).equalsIgnoreCase(idSig.get(i))){
+                sig+=Siguientes.get(i)+", ";
+                }
+            }
+            System.out.println(valorSig.get(j-1)+" ----> "+j+" ----> "+sig);
+            if(valorSig.get(j-1).equalsIgnoreCase("'<'")){
+            hojavalor+="|'"+(char)92+"<'";
+            }else if(valorSig.get(j-1).equalsIgnoreCase("'>'")){
+            hojavalor+="|'"+(char)92+">'";
+            }else{
+            hojavalor+="|"+valorSig.get(j-1);
+            }
+            hojaid+="|"+j;
+            hojasig+="|"+sig;
+            sig="";
+        }
+        String codigo="digraph D {\n" +
+        "\n" +
+        "    node [fontname=\"Arial\"];\n" +
+        "    node_A [shape=record label=\"{"+hojavalor+"}|{"+hojaid+"}|{"+hojasig+"--}\"];\n" +
+        "\n" +
+        "}";
+        CodigoSig(codigo);
+    }
      
 }

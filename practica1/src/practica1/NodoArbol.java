@@ -123,10 +123,18 @@ public class NodoArbol {
         for (int i = 0;i<ultimos.size() ; i++) {
             u+=ultimos.get(i)+", ";
         }
+        String auxvalor=valor;
+            if(valor.equalsIgnoreCase("'<'")){
+            auxvalor="'"+(char)92+"<'";
+            }else if(valor.equalsIgnoreCase("'>'")){
+            auxvalor="'"+(char)92+">'";
+            }else{
+            auxvalor=valor;
+            }
         if(izquierdo==null && derecho==null){
-            etiqueta="nodo"+id+" [ label =\""+valor+"\\nAnulable="+anulable+"\\nPrimeros="+p+"\\nUltimos="+u+"\\nid="+identificador+"\"];\n";
+            etiqueta="nodo"+id+" [ label =\""+auxvalor+"\\nAnulable="+anulable+"\\nPrimeros="+p+"\\nUltimos="+u+"\\nid="+identificador+"\"];\n";
         }else{
-            etiqueta="nodo"+id+" [ label =\"<C0>|"+valor+"\\nAnulable="+anulable+"\\nPrimeros="+p+"\\nUltimos="+u+"|<C1>\"];\n";
+            etiqueta="nodo"+id+" [ label =\"<C0>|"+auxvalor+"\\nAnulable="+anulable+"\\nPrimeros="+p+"\\nUltimos="+u+"|<C1>\"];\n";
         }
         if(izquierdo!=null){
             etiqueta=etiqueta + izquierdo.getCodigoInterno() +
