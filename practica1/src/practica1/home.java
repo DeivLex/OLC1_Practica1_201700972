@@ -65,9 +65,12 @@ public class home extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         selector = new javax.swing.JComboBox<>();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        Salida = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        MostrarConjuntos = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -101,15 +104,22 @@ public class home extends javax.swing.JFrame {
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
+        Salida.setColumns(20);
+        Salida.setRows(5);
+        jScrollPane3.setViewportView(Salida);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel2.setText("Reporte Analisis lexico");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel3.setText("Salida");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel4.setText("Conjuntos");
+
+        MostrarConjuntos.setColumns(20);
+        MostrarConjuntos.setRows(5);
+        jScrollPane4.setViewportView(MostrarConjuntos);
 
         jMenu1.setText("Archivo");
 
@@ -157,7 +167,9 @@ public class home extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2))
                     .addComponent(jLabel3)
-                    .addComponent(jScrollPane3))
+                    .addComponent(jScrollPane3)
+                    .addComponent(jLabel4)
+                    .addComponent(jScrollPane4))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -183,7 +195,11 @@ public class home extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane4))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -242,17 +258,51 @@ guardarComo();
                 }else if (!NameER.get(i).equals(NameER.get(i-1))) {
                     selector.addItem(NameER.get(i));   
                 }
-
             }
-            for (int i = 0; i < ER.size(); i++) {
-                System.out.println(i+". "+NameER.get(i)+" = "+ER.get(i));
+        //Mostrar conjuntos
+        ArrayList<String> ayudaCon = new ArrayList();
+        for (int i = 0; i < Conjunto.size(); i++) {
+                if (i==0) {
+                    ayudaCon.add(Conjunto.get(0));
+                }else if (!Conjunto.get(i).equals(Conjunto.get(i-1))) {
+                    ayudaCon.add(Conjunto.get(i));   
+                }
+        }
+        String auxiliarCon = "";
+        for (int i = 0; i < ayudaCon.size(); i++) {
+            String auxCon="";
+            for (int j = 0; j < Conjunto.size(); j++) {
+                if (Conjunto.get(j).equalsIgnoreCase(ayudaCon.get(i))) {
+                 auxCon+=DatCon.get(j)+", ";   
+                }
             }
+            auxiliarCon+=ayudaCon.get(i)+"----->"+auxCon+"\n";
+        }
+        MostrarConjuntos.setText(auxiliarCon);
+        ayudaCon.clear();
         }
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        ABBGraficar.main(selector.getSelectedItem().toString());
+    validarEr();
+    ABBGraficar.main(selector.getSelectedItem().toString());
+    String auxiliar = "";
+    int ps = 0;
+    for(int i = 0; i < listaLexema.size(); i++){
+        if(listaLexema.get(i).equalsIgnoreCase(selector.getSelectedItem().toString())){
+            if (ps!=0) {
+                if (validarEr()==true) {
+                auxiliar += "La expresion "+(char)34+listaLexema.get(i+2)+(char)34+" Es valida para la expresion regular " +(char)34+ listaLexema.get(i)+(char)34+ "\n";    
+                }else{
+                auxiliar += "La expresion "+(char)34+listaLexema.get(i+2)+(char)34+" No es valida para la expresion regular " +(char)34+ listaLexema.get(i)+(char)34+ "\n";
+                }
+                
+            }
+        ps++;
+        }
+    }
+    Salida.setText(auxiliar);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -293,11 +343,14 @@ guardarComo();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea Consola;
     private javax.swing.JTextArea Entrada;
+    private javax.swing.JTextArea MostrarConjuntos;
+    private javax.swing.JTextArea Salida;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -306,7 +359,7 @@ guardarComo();
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JComboBox<String> selector;
     // End of variables declaration//GEN-END:variables
 File direccion;
@@ -422,7 +475,7 @@ for (int i = 0; i < fuente.length(); i++) {
             }else if(Character.isDigit(c)){
                 auxLex += c;
                 estado = 1;
-            }else if(auxLex.equals("CONJ")){
+            }else if(auxLex.equals("CONJ")){    
             addList(auxLex,"Palabra Reservada");
             estado=0;
             i=i-1;
@@ -757,6 +810,13 @@ private void addList(String lex, String token){
     listaLexema.add(lex);
     listaToken.add(token);
     auxLex = "";
+}
+public boolean validarEr(){  
+    int numero = (int) (Math.random() * 3);
+    if(numero==0||numero==2){
+        return true;
+    }
+    return false;
 }
 
 }

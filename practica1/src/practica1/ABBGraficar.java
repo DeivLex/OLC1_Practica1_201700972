@@ -39,8 +39,7 @@ public class ABBGraficar {
         p1.add(Integer.toString(id));
         u1.add(Integer.toString(id));
         rais.derecho.setPrimeros(p1);
-        rais.derecho.setUltimos(u1);
-        
+        rais.derecho.setUltimos(u1);     
         prueba.insertar();
         prueba.postorden();
         Siguientes.clear();

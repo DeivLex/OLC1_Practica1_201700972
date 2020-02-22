@@ -16,6 +16,7 @@ public class ArbolBinario {
     static ArrayList<String> idSig = new ArrayList();
     static ArrayList<String> Estados = new ArrayList();
     static ArrayList<String> idEs = new ArrayList();
+    static int numes=0;
     
 
     private NodoArbol raiz;
@@ -179,10 +180,6 @@ public class ArbolBinario {
             idEs.add("S0");
             Estados.add(raiz.getPrimeros().get(i));
         }
-        /*int control=1;
-        while(control!=0){
-        
-        }*/
         String sig="";
         for (int j = 1; j <= id; j++) {
             for (int i = 0; i < Siguientes.size(); i++) {
@@ -190,7 +187,6 @@ public class ArbolBinario {
                 sig+=Siguientes.get(i)+", ";
                 }
             }
-            System.out.println(valorSig.get(j-1)+" ----> "+j+" ----> "+sig);
             if(existeEs(sig)==false){
                 ese++;
                 for (int i = 0; i < Siguientes.size(); i++) {
@@ -200,9 +196,9 @@ public class ArbolBinario {
                 }
             }
             }
-            System.out.println("Existe: "+existeEs(sig));
             sig="";
         }
+        numes=ese;
         //Imprimir estados
         String esta="";
         for (int j = 0; j < ese; j++) {
@@ -215,6 +211,7 @@ public class ArbolBinario {
             System.out.println("S"+Integer.toString(j)+" ----> "+esta);
             esta="";
         }
+        transiciones();
     }
     public boolean existeEs(String filtro){
         String sig="";
@@ -242,6 +239,32 @@ public class ArbolBinario {
                 }
         }
         return false;
+    }
+    
+    public void transiciones(){
+        String tran[][] = new String[id][numes];
+        tran[1][0]="S1";
+        int auxid=0;
+        String esta="";
+        for (int k = 0; k < id; k++) {
+        for (int j = 0; j < numes; j++) {
+            for (int i = 0; i < Estados.size(); i++) {
+                String kk="S"+Integer.toString(j);
+                if(kk.equalsIgnoreCase(idEs.get(i))){
+                esta+=Estados.get(i)+", ";
+                    if (Estados.get(i).equalsIgnoreCase(Integer.toString(k+1))) {
+                        if(j+1==numes){
+                        tran[k][j]="S"+Integer.toString(j);
+                        }else{
+                        tran[k][j]="S"+Integer.toString(j+1);}
+                    }
+                }
+            }
+            tran[0][j]="S"+Integer.toString(j)+" ["+esta+"]";
+            esta="";
+        }
+        }
+        graficarTran(tran);
     }
     
     public void CodigoSig(String codigoSig) {
@@ -284,7 +307,6 @@ public class ArbolBinario {
                 sig+=Siguientes.get(i)+", ";
                 }
             }
-            System.out.println(valorSig.get(j-1)+" ----> "+j+" ----> "+sig);
             if(valorSig.get(j-1).equalsIgnoreCase("'<'")){
             hojavalor+="|'"+(char)92+"<'";
             }else if(valorSig.get(j-1).equalsIgnoreCase("'>'")){
@@ -305,4 +327,62 @@ public class ArbolBinario {
         CodigoSig(codigo);
     }
      
+    public void CodigoTran(String codigoTran) {
+        FileWriter fichero = null;
+        PrintWriter escritor;
+        try
+        {
+            fichero = new FileWriter("transiciones.dot");
+            escritor = new PrintWriter(fichero);
+            escritor.print(codigoTran);
+        } 
+        catch (Exception e){
+            System.err.println("Error al escribir el archivo transiciones.dot");
+        }finally{
+           try {
+                if (null != fichero)
+                    fichero.close();
+           }catch (Exception e2){
+               System.err.println("Error al cerrar el archivo transiciones.dot");
+           } 
+        }                        
+        try{
+          Runtime rt = Runtime.getRuntime();
+          rt.exec( "dot -Tjpg -o transiciones.jpg transiciones.dot");
+
+          Thread.sleep(500);
+        } catch (Exception ex) {
+            System.err.println("Error al generar la imagen para el archivo transiciones.dot");
+        }            
+    }
+    
+    public void graficarTran(String tran[][]){
+        
+        String aux="";
+        for (int x=0; x < tran.length; x++) {
+            for (int y=0; y < tran[x].length; y++) {
+               if(y==0){
+                   if(x==0){
+                   aux+="Estados";
+                   }else{
+                   if (valorSig.get(x-1).equalsIgnoreCase("'<'")) {
+                      aux+="'"+(char)92+"<'";
+                   }else if(valorSig.get(x-1).equalsIgnoreCase("'>'")){
+                        aux+="'"+(char)92+">'";
+                   }else{
+                    aux+=valorSig.get(x-1);}
+                   }
+               }    
+               aux+="|"+tran[x][y];
+            }
+               aux+="}|{";
+        }
+        String codigo="digraph D {\n" +
+        "\n" +
+        "    node [fontname=\"Arial\"];\n" +
+        "    node_A [shape=record label=\"{"+aux+"}\"];\n" +
+        "\n" +
+        "}";
+        CodigoTran(codigo);
+    }
 }
